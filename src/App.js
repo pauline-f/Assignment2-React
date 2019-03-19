@@ -11,30 +11,39 @@ class App extends Component {
     message: ""
   }
 
-  lengthText = (event) => {
-    this.setState({lengthText: event.target.value.length});
-    this.setState({text: event.target.value});
-    this.displayMessage(event);
+  onTextChanged = (event) => {
+    this.setState({text: event.target.value, lengthText: event.target.value.length});
+    this.displayMessage(event.target.value);
   }
 
-  displayMessage = (event) => {
-    if (event.target.value.length < 5) {
+  displayMessage = (text) => {
+    if (text.length < 5) {
       this.setState({message: "Text too short"});
     } else {
       this.setState({message: "Text long enough"});
     }
   }
 
+  deleteLetter = (letterIndex) => {
+    const letters = this.state.text.split('');
+    letters.splice(letterIndex,1);
+
+    this.setState({text: letters.join(''), lengthText: letters.length});    
+    this.displayMessage(this.state.text);
+  }
+
   render() {
     return (
       <div className="App">
-        <input type="text" defaultValue={this.state.text} onChange={this.lengthText}></input>
+        <input type="text" value={this.state.text} onChange={this.onTextChanged}></input>
         <p>{this.state.lengthText}</p>
-        <ValidationComponent length={this.state.lengthText} message={this.state.message}/>
+        <ValidationComponent message={this.state.message}/>
 
         {this.state.text.split('').map((letter, index) => {
           return <CharComponent
-            letter={letter}></CharComponent>
+            click={() => this.deleteLetter(index)}
+            letter={letter}
+            key={index}></CharComponent>
         })}
       </div>
     );
